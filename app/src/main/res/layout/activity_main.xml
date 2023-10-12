@@ -5,7 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    >
+
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -129,7 +133,6 @@
                 android:text="@string/min_temp"
                 android:textColor="@color/black"
                 android:textSize="24sp"
-                android:layout_marginBottom="5dp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_max_temp"
                 app:layout_constraintEnd_toStartOf="@+id/tv_max_temp"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -151,14 +154,13 @@
 
             <ImageView
                 android:id="@+id/img_weather"
-                android:layout_width="164dp"
-                android:layout_height="128dp"
+                android:layout_width="220dp"
+                android:layout_height="200dp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_temp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/tv_temp"
                 app:layout_constraintTop_toTopOf="@+id/tv_temp"
-                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/humidity" />
 
             <TextView
@@ -172,13 +174,6 @@
                 app:layout_constraintEnd_toEndOf="@+id/img_weather"
                 app:layout_constraintStart_toStartOf="@+id/tv_temp"
                 app:layout_constraintTop_toBottomOf="@+id/tv_temp" />
-
-            <FrameLayout
-                android:id="@+id/frameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </FrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -477,17 +472,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="0dp"
             android:padding="5dp"
-
             android:text="@string/five_days_forecast"
             android:textSize="18sp"
             app:drawableBottomCompat="@drawable/ic_down"
             app:layout_constraintBottom_toTopOf="@+id/glMainForecastBtn"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/glMainForecastBtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
