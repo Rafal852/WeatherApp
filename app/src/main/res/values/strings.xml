@@ -22,4 +22,6 @@
     <string name="sunset">Sunset</string>
     <string name="humidity">Humidity</string>
     <string name="wind_speed">Wind speed</string>
+
+    <string name="api_key">bd199e6fd842a33e4ae3f454783f53e8</string>
 </resources>
