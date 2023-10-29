@@ -19,4 +19,9 @@
         <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
     </style>
 
+    <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <!-- Define the text color for the query hint -->
+        <item name="android:textColorHint">#000000</item>
+    </style>
+
 </resources>

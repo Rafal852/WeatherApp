@@ -176,12 +176,6 @@ class MainActivity : AppCompatActivity() {
             if (response.isSuccessful && response.body()!= null){
                 withContext(Dispatchers.Main){
                     val data = response.body()!!
-                    val iconId = data.weather[0].icon
-                    val imgUrl = "https://openweathermap.org/img/w/$iconId.png"
-
-                    Picasso.get()
-                        .load(imgUrl)
-                        .into(binding.imgWeather)
 
                     binding.tvSunrise.text= dateFormatConverter(data.sys.sunrise.toLong())
                     binding.tvSunset.text= dateFormatConverter(data.sys.sunset.toLong())
