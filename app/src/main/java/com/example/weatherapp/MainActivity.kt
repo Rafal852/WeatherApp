@@ -1,8 +1,15 @@
 package com.example.weatherapp
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.adapter.RvAdapter
@@ -10,6 +17,9 @@ import com.example.weatherapp.data.forecastModels.ForecastData
 import com.example.weatherapp.databinding.ActivityMainBinding
 import com.example.weatherapp.databinding.BottomSheetLayoutBinding
 import com.example.weatherapp.utils.RetrofitInstance
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +37,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var sheetBinding: BottomSheetLayoutBinding
     private lateinit var dialog: BottomSheetDialog
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
+    private var city: String = "berlin"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +48,72 @@ class MainActivity : AppCompatActivity() {
         dialog = BottomSheetDialog(this, R.style.BottomSheetTheme)
         dialog.setContentView(sheetBinding.root)
         setContentView(binding.root)
-        getCurrentWeather()
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        binding.searchView.setOnQueryTextListener(object: androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+
+                if (query != null){
+                    city = query
+                }
+                getCurrentWeather(city)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+        })
+
+        fetchLocation()
+        getCurrentWeather(city) 
 
         binding.tvForecast.setOnClickListener {
             openDialog()
+        }
+
+        binding.tvLocation.setOnClickListener {
+            fetchLocation()
+        }
+    }
+
+    private fun fetchLocation() {
+        val task: Task<Location> = fusedLocationProviderClient.lastLocation
+
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),101
+            )
+            return
+        }
+
+        task.addOnSuccessListener {
+            val geocoder= Geocoder(this,Locale.getDefault())
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                geocoder.getFromLocation(it.latitude,it.longitude,1, object: Geocoder.GeocodeListener{
+                    override fun onGeocode(addresses: MutableList<Address>) {
+                        city = addresses[0].locality
+                    }
+                })
+            }else{
+                val address = geocoder.getFromLocation(it.latitude,it.longitude,1) as List<Address>
+
+                city = address[0].locality
+            }
+
+            getCurrentWeather(city)
         }
     }
 
@@ -58,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.IO) {
             val response = try {
                 RetrofitInstance.api.getForecast(
-                    "berlin",
+                    city,
                     "metric",
                     applicationContext.getString(R.string.api_key)
                 )
@@ -86,10 +161,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getCurrentWeather() {
+    private fun getCurrentWeather(city: String) {
         GlobalScope.launch(Dispatchers.IO) {
             val response = try {
-                RetrofitInstance.api.getCurrentWeather("new york", "metric", applicationContext.getString(R.string.api_key))
+                RetrofitInstance.api.getCurrentWeather(city, "metric", applicationContext.getString(R.string.api_key))
             }catch (e: IOException){
                 Toast.makeText(applicationContext, "app error ${e.message}", Toast.LENGTH_SHORT).show()
                 return@launch
