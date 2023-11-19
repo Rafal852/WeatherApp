@@ -1,6 +1,7 @@
 package com.example.weatherapp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -161,6 +162,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun getCurrentWeather(city: String) {
         GlobalScope.launch(Dispatchers.IO) {
             val response = try {
@@ -183,14 +185,22 @@ class MainActivity : AppCompatActivity() {
                     binding.apply {
                         tvStatus.text = data.weather[0].description
                         tvWind.text = "${data.wind.speed.toString()} KM/h"
-                        tvLocation.text ="${data.name}\n${data.sys.country}"
-                        tvTemp.text ="${data.main.temp.toInt()} °C"
-                        tvFeelsLike.text ="Feels like: ${data.main.feels_like} °C"
-                        tvMinTemp.text ="Min temp: ${data.main.temp_min} °C"
-                        tvMaxTemp.text ="MAx temp: ${data.main.temp_max} °C"
-                        tvMaxTemp.text ="MAx temp: ${data.main.temp_max} °C"
-                        tvPressure.text =" ${data.main.pressure} hPa"
-                        tvUpdateTime.text ="Last Update: ${dateFormatConverter(data.dt.toLong())}"
+                        tvLocation.text = "${data.name}\n${data.sys.country}"
+
+                        val roundedTemp = String.format("%.1f", data.main.temp)
+                        tvTemp.text = "${roundedTemp} °C"
+
+                        val roundedFeelsLike = String.format("%.1f", data.main.feels_like)
+                        tvFeelsLike.text = "Feels like: ${roundedFeelsLike} °C"
+
+                        val roundedMinTemp = String.format("%.1f", data.main.temp_min)
+                        tvMinTemp.text = "Min temp: ${roundedMinTemp} °C"
+
+                        val roundedMaxTemp = String.format("%.1f", data.main.temp_max)
+                        tvMaxTemp.text = "Max temp: ${roundedMaxTemp} °C"
+
+                        tvPressure.text = "${data.main.pressure} hPa"
+                        tvUpdateTime.text = "Last Update: ${dateFormatConverter(data.dt.toLong())}"
                     }
                 }
             }
